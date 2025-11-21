@@ -4,25 +4,25 @@ metadata:
   name: project-a1-ingress
   namespace: project-a1
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   ingressClassName: nginx
   rules:
   - host: app.local
     http:
       paths:
-      # FastAPI → /api/xxx → /xxx 로 rewrite
-      - path: /api(/|$)(.*)
-        pathType: Prefix
+      # FastAPI
+      - path: /api/(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: fastapi-backend
             port:
               number: 8000
 
-      # Flutter 웹 → /
+      # Flutter Web
       - path: /(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: flutter-frontend
