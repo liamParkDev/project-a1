@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: flutter
-          image: nginx:1.25
+          image: ghcr.io/liamparkdev/project-a1-frontend:latest
           ports:
             - containerPort: 80
