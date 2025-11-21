@@ -4,7 +4,7 @@ metadata:
   name: flutter-frontend
   namespace: project-a1
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: flutter-frontend
@@ -14,7 +14,7 @@ spec:
         app: flutter-frontend
     spec:
       containers:
-      - name: flutter
-        image: ghcr.io/liamParkDev/project-a1-flutter:latest
-        ports:
-        - containerPort: 80
+        - name: flutter
+          image: nginx:1.25
+          ports:
+            - containerPort: 80
