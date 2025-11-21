@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flutter-frontend
+  namespace: project-a1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flutter-frontend
+  template:
+    metadata:
+      labels:
+        app: flutter-frontend
+    spec:
+      containers:
+        - name: flutter-web
+          image: ghcr.io/liamParkDev/project-a1-flutter:latest   # TODO: Flutter 이미지
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: TZ
+              value: "Asia/Seoul"
