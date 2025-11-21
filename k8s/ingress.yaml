@@ -8,23 +8,20 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: app.local
-      http:
-        paths:
-          # FastAPI -> /api/
-          - path: /api/?(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: fastapi-backend
-                port:
-                  number: 8000
-
-          # Flutter Web -> root
-          - path: /(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: flutter-frontend
-                port:
-                  number: 80
+  - host: argocd.local
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: fastapi-service
+            port:
+              number: 8000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: flutter-service
+            port:
+              number: 80
