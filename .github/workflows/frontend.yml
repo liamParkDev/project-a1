@@ -21,14 +21,12 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: liamparkdev
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build Docker image (Flutter)
+      - name: Build Docker image
         run: |
-          docker build \
-            -t ghcr.io/liamparkdev/project-a1-frontend:latest \
-            ./frontend
+          docker build -t ghcr.io/liamparkdev/project-a1-frontend:latest ./frontend
 
       - name: Push Docker image
         run: |
