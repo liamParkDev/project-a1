@@ -14,11 +14,7 @@ spec:
         app: flutter-frontend
     spec:
       containers:
-        - name: flutter-web
-          image: ghcr.io/liamParkDev/project-a1-flutter:latest   # TODO: Flutter 이미지
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 80
-          env:
-            - name: TZ
-              value: "Asia/Seoul"
+      - name: flutter
+        image: ghcr.io/liamParkDev/project-a1-flutter:latest
+        ports:
+        - containerPort: 80
