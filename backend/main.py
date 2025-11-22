@@ -1,19 +1,23 @@
 from fastapi import FastAPI
-from db.session import Base, engine
-from routers import items, users, auth
-
-Base.metadata.create_all(bind=engine)
+from db.session import SessionLocal
 
 app = FastAPI()
 
-app.include_router(auth.router)
-app.include_router(users.router)
-app.include_router(items.router)
-
 @app.get("/")
 def root():
-    return {"message": "API Running!"}
+    return {"message": "Hello from FastAPI backend!"}
 
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+@app.get("/api/items/{item_id}")
+def read_item(item_id: int):
+    return {"item_id": item_id, "name": f"Item {item_id}"}
+
+# -------------------------
+# 🔥 DB 연결 테스트 API 추가
+# -------------------------
 @app.get("/db-test")
 def db_test():
     try:
