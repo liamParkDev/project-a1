@@ -15,9 +15,6 @@ def health_check():
 def read_item(item_id: int):
     return {"item_id": item_id, "name": f"Item {item_id}"}
 
-# -------------------------
-# 🔥 DB 연결 테스트 API 추가
-# -------------------------
 @app.get("/db-test")
 def db_test():
     try:

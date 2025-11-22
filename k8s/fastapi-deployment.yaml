@@ -16,5 +16,6 @@ spec:
       containers:
         - name: fastapi
           image: ghcr.io/liamparkdev/project-a1-backend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
