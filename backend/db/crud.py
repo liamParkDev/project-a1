@@ -1,14 +1,12 @@
 from sqlalchemy.orm import Session
 from db import models
-from passlib.context import CryptContext
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from core.security import hash_password, verify_password
 
 
 # ===== USERS =====
 
 def create_user(db: Session, email: str, password: str, nickname: str):
-    hashed = pwd_context.hash(password)
+    hashed = hash_password(password)  # Argon2 해싱
     user = models.User(email=email, password_hash=hashed, nickname=nickname)
     db.add(user)
     db.commit()
@@ -20,7 +18,7 @@ def authenticate_user(db: Session, email: str, password: str):
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         return None
-    if not pwd_context.verify(password, user.password_hash):
+    if not verify_password(password, user.password_hash):  # Argon2 검증
         return None
     return user
 

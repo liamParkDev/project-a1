@@ -7,9 +7,9 @@ from core.config import settings
 pwd_context = CryptContext(
     schemes=["argon2"],
     deprecated="auto",
-    argon2__memory_cost=102400,   # 100MB 메모리 사용
+    argon2__memory_cost=102400,  # 100MB
     argon2__parallelism=8,
-    argon2__time_cost=3
+    argon2__time_cost=3,
 )
 
 def hash_password(password: str) -> str:
@@ -18,15 +18,14 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-# JWT 발급
 def create_access_token(data: dict, expires_minutes: int = 60):
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=expires_minutes)
     to_encode.update({"exp": expire})
-    
+
     encoded_jwt = jwt.encode(
         to_encode,
         settings.JWT_SECRET,
-        algorithm=settings.JWT_ALGORITHM
+        algorithm=settings.JWT_ALGORITHM,
     )
     return encoded_jwt
