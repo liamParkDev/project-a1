@@ -19,7 +19,7 @@ def read_item(item_id: int):
 def db_test():
     try:
         db = SessionLocal()
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
         return {"status": "ok", "message": "DB connected!"}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
