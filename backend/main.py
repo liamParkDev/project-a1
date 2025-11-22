@@ -1,6 +1,6 @@
-from fastapi import FastAPI , Depends
+from fastapi import FastAPI, Depends
 from sqlalchemy import text
-from db.session import SessionLocal
+from db.session import SessionLocal, get_db
 from routers import users, products, translate
 
 app = FastAPI(title="Project A1 API")
@@ -28,4 +28,3 @@ def db_test(db = Depends(get_db)):
         return {"status": "ok", "message": "DB connected!"}
     except Exception as e:
         return {"status": "error", "detail": str(e)}
-
