@@ -19,6 +19,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Debug backend folder
+        run: |
+          echo "===== backend files in GH Actions ====="
+          ls -R ./backend
+          echo "===== requirements.txt ====="
+          cat ./backend/requirements.txt
+          echo "===== main.py ====="
+          cat ./backend/main.py
+
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
