@@ -1,16 +1,15 @@
 from fastapi import FastAPI
+from db.session import Base, engine
+from routers import items, users, auth
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(items.router)
+
 @app.get("/")
 def root():
-    return {"message": "Hello from FastAPI backend!"}
-
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int):
-    return {"item_id": item_id, "name": f"Item {item_id}"}
-
+    return {"message": "API Running!"}
