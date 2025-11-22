@@ -1,8 +1,10 @@
-from sqlalchemy import Column, BigInteger, String, Text, DateTime, ForeignKey, Enum, DECIMAL, TINYINT
+from sqlalchemy import Column, BigInteger, String, Text, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.mysql import TINYINT, DECIMAL
 from datetime import datetime
 from db.session import Base
 import enum
+
 
 
 class UserRole(enum.Enum):
