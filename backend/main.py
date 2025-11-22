@@ -1,5 +1,7 @@
 from fastapi import FastAPI
+from sqlalchemy import text
 from db.session import SessionLocal
+
 
 app = FastAPI()
 
