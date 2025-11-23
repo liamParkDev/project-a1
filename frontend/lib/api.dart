@@ -4,7 +4,7 @@ import 'token_storage.dart';
 class Api {
   static final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://app.local/api',  // 🔥 Ingress /api 적용
+      baseUrl: 'http://app.local/api',
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
       headers: {
