@@ -11,15 +11,15 @@ spec:
   - host: app.local
     http:
       paths:
-      - path: /api(/|$)(.*)
-        pathType: ImplementationSpecific
+      - path: /api/(.*)
+        pathType: Prefix
         backend:
           service:
             name: fastapi-backend
             port:
               number: 8000
 
-      - path: /
+      - path: /(.*)
         pathType: Prefix
         backend:
           service:
