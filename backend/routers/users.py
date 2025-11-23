@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from fastapi import FastAPI
+from routers import users
 
 from db.session import get_db
 import db.crud as crud
@@ -11,9 +13,9 @@ from core.security import (
     get_current_admin,
     decode_token,
 )
+app = FastAPI()
 
-router = APIRouter(prefix="/users", tags=["Users"])
-
+app.include_router(users.router, prefix="/api")
 
 # --------- Pydantic 스키마 ---------
 
