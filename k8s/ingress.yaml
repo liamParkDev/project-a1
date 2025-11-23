@@ -12,12 +12,13 @@ spec:
     http:
       paths:
       - path: /api(/|$)(.*)
-        pathType: Prefix
+        pathType: ImplementationSpecific
         backend:
           service:
             name: fastapi-backend
             port:
               number: 8000
+
       - path: /
         pathType: Prefix
         backend:
