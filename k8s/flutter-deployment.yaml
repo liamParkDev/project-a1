@@ -3,18 +3,22 @@ kind: Deployment
 metadata:
   name: flutter-frontend
   namespace: project-a1
+
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: flutter-frontend
+
   template:
     metadata:
       labels:
         app: flutter-frontend
+
     spec:
       containers:
         - name: flutter
           image: ghcr.io/liamparkdev/project-a1-frontend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
