@@ -1,10 +1,15 @@
+import 'package:dio/dio.dart';
+import 'token_storage.dart';
+
 class Api {
   static final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://app.local/api',
+      baseUrl: 'http://app.local/api',  // 🔥 Ingress /api 적용
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+      },
     ),
   );
 
@@ -24,6 +29,7 @@ class Api {
 
       await TokenStorage.saveTokens(access, refresh);
       return true;
+
     } catch (e) {
       print("로그인 실패: $e");
       rethrow;

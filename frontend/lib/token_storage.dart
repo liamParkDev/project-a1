@@ -1,25 +1,24 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:html'; // ← web localStorage 사용
 
 class TokenStorage {
   static const _access = 'access_token';
   static const _refresh = 'refresh_token';
 
-  static const storage = FlutterSecureStorage();
-
   static Future<void> saveTokens(String access, String refresh) async {
-    await storage.write(key: _access, value: access);
-    await storage.write(key: _refresh, value: refresh);
+    window.localStorage[_access] = access;
+    window.localStorage[_refresh] = refresh;
   }
 
   static Future<String?> getAccess() async {
-    return await storage.read(key: _access);
+    return window.localStorage[_access];
   }
 
   static Future<String?> getRefresh() async {
-    return await storage.read(key: _refresh);
+    return window.localStorage[_refresh];
   }
 
   static Future<void> clear() async {
-    await storage.deleteAll();
+    window.localStorage.remove(_access);
+    window.localStorage.remove(_refresh);
   }
 }
