@@ -23,3 +23,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
+
+  generate: true
+
+  web:
+    generate: true
+    service_worker:
+      strategy: none
