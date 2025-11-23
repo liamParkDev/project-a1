@@ -2,12 +2,21 @@ from fastapi import FastAPI, Depends
 from sqlalchemy import text
 from db.session import SessionLocal, get_db
 from routers import users, products, translate
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Project A1 API")
 
 app.include_router(users.router)
 app.include_router(products.router)
 app.include_router(translate.router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def root():
