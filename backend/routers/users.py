@@ -1,8 +1,7 @@
+# routers/users.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from fastapi import FastAPI
-from routers import users
 
 from db.session import get_db
 import db.crud as crud
@@ -13,11 +12,8 @@ from core.security import (
     get_current_admin,
     decode_token,
 )
-app = FastAPI()
+router = APIRouter(prefix="/users", tags=["Users"])
 
-app.include_router(users.router, prefix="/api")
-
-# --------- Pydantic 스키마 ---------
 
 class UserRegister(BaseModel):
     email: str
@@ -45,9 +41,6 @@ class UserMe(BaseModel):
     class Config:
         orm_mode = True
 
-
-# --------- API 엔드포인트 ---------
-
 @router.post("/register")
 def register(payload: UserRegister, db: Session = Depends(get_db)):
     user = crud.create_user(db, payload.email, payload.password, payload.nickname)
@@ -74,10 +67,6 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
 
 @router.post("/refresh", response_model=TokenResponse)
 def refresh_token_endpoint(refresh_token: str):
-    """
-    Refresh Token으로 Access Token 재발급
-    (Body나 Query로 refresh_token 받는 단순 버전)
-    """
     payload = decode_token(refresh_token)
 
     if payload.get("type") != "refresh":
@@ -87,7 +76,7 @@ def refresh_token_endpoint(refresh_token: str):
         )
 
     user_id = int(payload.get("sub"))
-    # 여기서는 DB까지 안 가고 user_id만 가지고 새 토큰 발급 (필요하면 DB 조회 추가 가능)
+
     new_access_token = create_access_token(user_id)
     new_refresh_token = create_refresh_token(user_id)
 
@@ -104,7 +93,4 @@ def read_me(current_user=Depends(get_current_user)):
 
 @router.get("/admin-only", response_model=UserMe)
 def admin_only(current_admin=Depends(get_current_admin)):
-    """
-    관리자만 접근 가능한 API 예시
-    """
     return current_admin
