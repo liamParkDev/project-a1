@@ -1,14 +1,15 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy import text
-from db.session import SessionLocal, get_db
+from db.session import get_db
 from routers import users, products, translate
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Project A1 API")
 
-app.include_router(users.router)
-app.include_router(products.router)
-app.include_router(translate.router)
+app.include_router(users.router, prefix="/api")
+app.include_router(products.router, prefix="/api")
+app.include_router(translate.router, prefix="/api")
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,6 +18,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/")
 def root():
@@ -30,8 +32,9 @@ def health_check():
 def read_item(item_id: int):
     return {"item_id": item_id, "name": f"Item {item_id}"}
 
-@app.get("/db-test")
-def db_test(db = Depends(get_db)):
+
+@app.get("/api/db-test")
+def db_test(db=Depends(get_db)):
     try:
         db.execute(text("SELECT 1"))
         return {"status": "ok", "message": "DB connected!"}
