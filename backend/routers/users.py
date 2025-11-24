@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from core.security import verify_password, get_password_hash
-from db.models import User
+from db.models import User, UserRole
 from db.session import get_db
 import db.crud as crud
 from core.security import (
@@ -48,6 +48,16 @@ class UserMeResponse(BaseModel):
     nickname: str | None
     profile_image: str | None
     role: str
+
+    class Config:
+        orm_mode = True
+
+class UserMeResponse(BaseModel):
+    id: int
+    email: str
+    nickname: str | None
+    profile_image: str | None
+    role: UserRole
 
     class Config:
         orm_mode = True
