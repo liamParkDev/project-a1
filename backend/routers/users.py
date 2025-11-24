@@ -2,6 +2,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from core.security import verify_password, get_password_hash
 from db.models import User
 from db.session import get_db
 import db.crud as crud
@@ -73,28 +74,6 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
         access_token=access_token,
         refresh_token=refresh_token,
     )
-
-
-@router.post("/refresh", response_model=TokenResponse)
-def refresh_token_endpoint(refresh_token: str):
-    payload = decode_token(refresh_token)
-
-    if payload.get("type") != "refresh":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token type",
-        )
-
-    user_id = int(payload.get("sub"))
-
-    new_access_token = create_access_token(user_id)
-    new_refresh_token = create_refresh_token(user_id)
-
-    return TokenResponse(
-        access_token=new_access_token,
-        refresh_token=new_refresh_token,
-    )
-
 
 @router.get("/me", response_model=UserMeResponse)
 def get_me(current_user: User = Depends(get_current_user)):
