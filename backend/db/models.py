@@ -5,12 +5,9 @@ from datetime import datetime
 from db.session import Base
 import enum
 
-
-
 class UserRole(enum.Enum):
     user = "user"
     admin = "admin"
-
 
 class User(Base):
     __tablename__ = "users"
@@ -18,9 +15,11 @@ class User(Base):
     id = Column(BigInteger, primary_key=True, index=True)
     email = Column(String(255), unique=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
+    profile_image = Column(String(500), nullable=True)
     nickname = Column(String(100), nullable=False)
     role = Column(Enum(UserRole), default=UserRole.user)
     is_active = Column(TINYINT(1), default=1)
+    refresh_token = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     last_login = Column(DateTime, nullable=True)
 
