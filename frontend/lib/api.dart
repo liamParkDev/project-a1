@@ -7,53 +7,86 @@ class Api {
       baseUrl: 'http://app.local/api',
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
     ),
-  );
-
-  static Future<bool> login(String email, String password) async {
-    try {
-      final res = await dio.post('/users/login', data: {
-        "email": email,
-        "password": password,
-      });
-
-      final access = res.data["access_token"];
-      final refresh = res.data["refresh_token"];
-
-      if (access == null || refresh == null) {
-        throw Exception("토큰이 없습니다!");
-      }
-
-      await TokenStorage.saveTokens(access, refresh);
-      return true;
-
-    } catch (e) {
-      print("로그인 실패: $e");
-      rethrow;
-    }
-  }
+  )..interceptors.add(_AuthInterceptor()); // 인터셉터 추가
 
   static Future<Response> get(String path) async {
-    final token = await TokenStorage.getAccess();
-    if (token == null) throw Exception("Access Token 없음!");
-
-    return dio.get(
-      path,
-      options: Options(headers: {"Authorization": "Bearer $token"}),
-    );
+    return dio.get(path);
   }
 
   static Future<Response> post(String path, Map<String, dynamic> data) async {
-    final token = await TokenStorage.getAccess();
-    if (token == null) throw Exception("Access Token 없음!");
+    return dio.post(path, data: data);
+  }
 
-    return dio.post(
-      path,
-      data: data,
-      options: Options(headers: {"Authorization": "Bearer $token"}),
-    );
+  static Future<bool> login(String email, String password) async {
+    final res = await dio.post('/users/login', data: {
+      "email": email,
+      "password": password,
+    });
+
+    final access = res.data["access_token"];
+    final refresh = res.data["refresh_token"];
+
+    await TokenStorage.saveTokens(access, refresh);
+    return true;
+  }
+}
+
+class _AuthInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    final access = await TokenStorage.getAccess();
+    if (access != null) {
+      options.headers['Authorization'] = 'Bearer $access';
+    }
+    super.onRequest(options, handler);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    // Access Token 만료 → 401 발생
+    if (err.response?.statusCode == 401) {
+      print(" Access Token 만료 → Refresh Token으로 재발급 시도");
+
+      final refreshed = await _refreshTokens();
+      if (refreshed) {
+        final RequestOptions req = err.requestOptions;
+        final newAccess = await TokenStorage.getAccess();
+
+        req.headers['Authorization'] = 'Bearer $newAccess';
+
+        final cloned = await Api.dio.fetch(req);
+        return handler.resolve(cloned);
+      } else {
+        print(" Refresh Token도 만료 → 자동 로그아웃");
+        await TokenStorage.clear();
+        return handler.next(err);
+      }
+    }
+
+    return handler.next(err);
+  }
+
+  Future<bool> _refreshTokens() async {
+    final refresh = await TokenStorage.getRefresh();
+    if (refresh == null) return false;
+
+    try {
+      final res = await Api.dio.post('/users/refresh', data: {
+        "refresh_token": refresh,
+      });
+
+      final newAccess = res.data["access_token"];
+      final newRefresh = res.data["refresh_token"];
+
+      await TokenStorage.saveTokens(newAccess, newRefresh);
+      print(" Token 재발급 성공");
+
+      return true;
+    } catch (e) {
+      print(" Refresh Token 재발급 실패: $e");
+      return false;
+    }
   }
 }
