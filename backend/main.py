@@ -13,7 +13,7 @@ app.include_router(translate.router, prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://app.local", "http://app.local"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
