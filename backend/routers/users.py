@@ -47,16 +47,6 @@ class UserMeResponse(BaseModel):
     email: str
     nickname: str | None
     profile_image: str | None
-    role: str
-
-    class Config:
-        orm_mode = True
-
-class UserMeResponse(BaseModel):
-    id: int
-    email: str
-    nickname: str | None
-    profile_image: str | None
     role: UserRole
 
     class Config:
@@ -79,6 +69,8 @@ def login(payload: UserLogin, db: Session = Depends(get_db)):
 
     access_token = create_access_token(user.id)
     refresh_token = create_refresh_token(user.id)
+    user.refresh_token = refresh_token
+    db.commit()
 
     return TokenResponse(
         access_token=access_token,
@@ -104,10 +96,10 @@ def change_password(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    if not verify_password(req.old_password, current_user.hashed_password):
+    if not verify_password(req.old_password, current_user.password_hash):
         raise HTTPException(status_code=400, detail="기존 패스워드가 일치하지 않습니다.")
 
-    current_user.hashed_password = get_password_hash(req.new_password)
+    current_user.password_hash = get_password_hash(req.new_password)
     db.commit()
 
     return {"message": "비밀번호가 변경되었습니다."}
@@ -144,3 +136,4 @@ def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
 
     new_access = create_access_token({"sub": user.id})
     return {"access_token": new_access}
+

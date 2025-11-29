@@ -1,13 +1,24 @@
+# db/crud.py
 from sqlalchemy.orm import Session
-from db import models
 from core.security import hash_password, verify_password
+from db.models import User, Product
 
 
-# ===== USERS =====
+# =======================================
+# USERS
+# =======================================
 
 def create_user(db: Session, email: str, password: str, nickname: str):
-    hashed = hash_password(password)  # Argon2 해싱
-    user = models.User(email=email, password_hash=hashed, nickname=nickname)
+    """
+    회원가입: User 생성
+    """
+    hashed = hash_password(password)
+    user = User(
+        email=email,
+        password_hash=hashed,
+        nickname=nickname,
+    )
+
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -15,38 +26,51 @@ def create_user(db: Session, email: str, password: str, nickname: str):
 
 
 def authenticate_user(db: Session, email: str, password: str):
-    user = db.query(models.User).filter(models.User.email == email).first()
+    """
+    로그인: 이메일/비밀번호 검증
+    """
+    user = db.query(User).filter(User.email == email).first()
     if not user:
         return None
-    if not verify_password(password, user.password_hash):  # Argon2 검증
+    if not verify_password(password, user.password_hash):
         return None
     return user
 
 
-# ===== PRODUCTS =====
+# =======================================
+# PRODUCTS
+# =======================================
 
 def get_product(db: Session, product_id: int):
-    return db.query(models.Product).filter(models.Product.id == product_id).first()
+    """
+    상품 1개 조회
+    """
+    return db.query(Product).filter(Product.id == product_id).first()
 
 
 def search_products(db: Session, keyword: str):
-    return (
-        db.query(models.Product)
-        .filter(models.Product.name_ko.like(f"%{keyword}%"))
-        .all()
+    """
+    상품 검색 (title LIKE 검색)
+    """
+    q = f"%{keyword}%"
+    return db.query(Product).filter(Product.title.like(q)).all()
+
+
+# =======================================
+# (선택) Product 생성/수정/삭제도 여기에 추가 예정
+# =======================================
+
+def create_product(db: Session, seller_id: int, title: str, price: int, description: str = None):
+    """
+    상품 등록
+    """
+    product = Product(
+        seller_id=seller_id,
+        title=title,
+        price=price,
+        description=description
     )
-
-
-# ===== TRANSLATION QUEUE =====
-
-def add_translate_job(db: Session, source_text: str, source_lang: str, target_lang: str):
-    job = models.TranslateQueue(
-        source_text=source_text,
-        source_lang=source_lang,
-        target_lang=target_lang,
-        status="pending"
-    )
-    db.add(job)
+    db.add(product)
     db.commit()
-    db.refresh(job)
-    return job
+    db.refresh(product)
+    return product

@@ -19,5 +19,5 @@ def login(username: str, password: str, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid login")
     
-    token = create_access_token({"sub": user.username})
+    token = create_access_token(user.id)
     return {"access_token": token}
