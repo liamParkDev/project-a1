@@ -19,3 +19,42 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
+          env:
+            - name: APP_ENV
+              value: "dev"
+
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: fastapi-dev-secret
+                  key: DB_HOST
+
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: fastapi-dev-secret
+                  key: DB_PORT
+
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: fastapi-dev-secret
+                  key: DB_NAME
+
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: fastapi-dev-secret
+                  key: DB_USER
+
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: fastapi-dev-secret
+                  key: DB_PASS
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: fastapi-dev-secret
+                  key: JWT_SECRET

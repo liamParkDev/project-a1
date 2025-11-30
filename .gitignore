@@ -1,0 +1,11 @@
+env/
+*.env
+*.local.env
+*.dev.env
+*.prod.env
+__pycache__/
+*.pyc
+venv/
+.env/
+*.log
+.vscode/
