@@ -40,7 +40,7 @@ class UserMe(BaseModel):
     role: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserMeResponse(BaseModel):
     id: int
@@ -50,7 +50,7 @@ class UserMeResponse(BaseModel):
     role: UserRole
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @router.post("/register")
 def register(payload: UserRegister, db: Session = Depends(get_db)):

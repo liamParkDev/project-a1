@@ -1,15 +1,29 @@
-from pydantic import BaseSettings
+import os
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))
+    )
+)
+
+ENV_FILE = os.path.join(BASE_DIR, "env", "dev.env")
 
 class Settings(BaseSettings):
-    MYSQL_USER: str = "hj-db"
-    MYSQL_PASSWORD: str = "Hani6967!"
-    MYSQL_HOST: str = "192.168.105.81"
-    MYSQL_DB: str = "projecta1"
-
-    JWT_SECRET: str = "supersecret"
+    APP_ENV: str = "dev"
     JWT_ALGORITHM: str = "HS256"
 
-    class Config:
-        env_file = ".env"
+    DB_HOST: str
+    DB_PORT: int
+    DB_NAME: str
+    DB_USER: str
+    DB_PASS: str
+
+    JWT_SECRET: str
+
+    model_config = SettingsConfigDict(
+        env_file=ENV_FILE,
+        env_file_encoding="utf-8"
+    )
 
 settings = Settings()

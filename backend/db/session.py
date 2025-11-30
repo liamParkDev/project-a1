@@ -1,23 +1,22 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
+from core.config import settings
 
-# ------------ DB CONFIG ----------------
-DB_HOST = "192.168.105.81"
-DB_PORT = "3306"
-DB_USER = "hj-db"
-DB_PASS = "Hani6967!"
-DB_NAME = "projecta1"
-
+# ------------ DATABASE URL ----------------
 DATABASE_URL = (
-    f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    f"mysql+pymysql://{settings.DB_USER}:"
+    f"{settings.DB_PASS}@"
+    f"{settings.DB_HOST}:"
+    f"{settings.DB_PORT}/"
+    f"{settings.DB_NAME}"
 )
 
 # ------------ ENGINE ----------------
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True,    
-    pool_recycle=3600,      
-    echo=False       
+    pool_pre_ping=True,
+    pool_recycle=3600,
+    echo=False
 )
 
 # ------------ SESSION ----------------

@@ -226,7 +226,7 @@ class CommunityPostImage(Base):
     id = Column(BigInteger, primary_key=True)
     post_id = Column(BigInteger, ForeignKey("community_posts.id"))
     image_url = Column(String(500))
-
+    sort_order = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     post = relationship("CommunityPost", back_populates="images")
@@ -239,13 +239,17 @@ class CommunityComment(Base):
     post_id = Column(BigInteger, ForeignKey("community_posts.id"))
     user_id = Column(BigInteger, ForeignKey("users.id"))
 
-    content = Column(Text, nullable=False)
+    parent_id = Column(BigInteger, ForeignKey("community_comments.id"), nullable=True)
 
+    content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    # 관계 설정
     post = relationship("CommunityPost", back_populates="comments")
     user = relationship("User", back_populates="community_comments")
 
+    parent = relationship("CommunityComment", remote_side=[id])
+    children = relationship("CommunityComment", overlaps="parent")
 
 class CommunityPostLike(Base):
     __tablename__ = "community_post_likes"
