@@ -8,3 +8,4 @@ passlib[argon2]
 python-jose[cryptography]
 alembic
 pydantic==1.10.13
+pydantic_settings
