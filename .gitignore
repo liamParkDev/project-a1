@@ -9,3 +9,5 @@ venv/
 .env/
 *.log
 .vscode/
+secret-fastapi-dev.yaml
+secret-fastapi-live.yaml
