@@ -2,6 +2,7 @@ from datetime import datetime
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -147,12 +148,23 @@ async def _fetch_provider_profile(provider: str, code: str, redirect_uri: str) -
     raise HTTPException(status_code=400, detail="Unsupported provider")
 
 
-def _issue_tokens(response: Response, user: User, db: Session) -> OAuthLoginResponse:
+def _issue_tokens(
+    response: Response,
+    user: User,
+    db: Session,
+    redirect_url: str | None = None,
+):
     access_token = create_access_token(user.id)
     refresh_token = create_refresh_token(user.id)
     user.refresh_token = refresh_token
     user.last_login = datetime.utcnow()
     db.commit()
+
+    if redirect_url:
+        redirect = RedirectResponse(url=redirect_url)
+        set_auth_cookies(redirect, access_token, refresh_token)
+        return redirect
+
     set_auth_cookies(response, access_token, refresh_token)
     return OAuthLoginResponse(
         access_token=access_token,
@@ -222,7 +234,8 @@ async def oauth_callback(
             profile_complete=False,
         )
 
-    return _issue_tokens(response, user, db)
+    redirect_target = payload.get("redirect")
+    return _issue_tokens(response, user, db, redirect_url=redirect_target)
 
 
 @router.post("/complete-profile", response_model=OAuthLoginResponse)

@@ -134,6 +134,39 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: Text(isLogin ? "회원가입으로 전환" : "로그인으로 전환"),
               ),
+
+              const SizedBox(height: 10),
+              const Text("또는", style: TextStyle(color: Colors.grey)),
+              const SizedBox(height: 10),
+
+              // 소셜 로그인 버튼들
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: loading
+                          ? null
+                          : () => Api.oauthLogin(
+                                "google",
+                                redirect: "https://app.local/#/home",
+                              ),
+                      child: const Text("Google로 계속"),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: loading
+                          ? null
+                          : () => Api.oauthLogin(
+                                "line",
+                                redirect: "https://app.local/#/home",
+                              ),
+                      child: const Text("LINE으로 계속"),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

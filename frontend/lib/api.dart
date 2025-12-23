@@ -1,10 +1,12 @@
+import 'dart:html';
+
 import 'package:dio/dio.dart';
 import 'token_storage.dart';
 
 class Api {
   static final dio = Dio(
     BaseOptions(
-      baseUrl: 'http://app.local/api',
+      baseUrl: 'https://app.local/api',
       connectTimeout: const Duration(seconds: 5),
       receiveTimeout: const Duration(seconds: 5),
       headers: {'Content-Type': 'application/json'},
@@ -45,6 +47,20 @@ class Api {
 
     await TokenStorage.saveTokens(access, refresh);
     return true;
+  }
+
+  static Future<void> oauthLogin(String provider, {String? redirect}) async {
+    final res = await dio.get('/auth/$provider/login', queryParameters: {
+      if (redirect != null) 'redirect': redirect,
+    });
+    final authUrl = res.data['auth_url'];
+    if (authUrl == null) {
+      throw Exception("auth_url missing");
+    }
+    // 브라우저 새 창/현재 창 이동
+    await Future.microtask(() {
+      window.location.assign(authUrl);
+    });
   }
 }
 
