@@ -3,11 +3,10 @@ kind: Ingress
 metadata:
   name: project-a1-ingress
   namespace: project-a1
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
-  tls:
-    - hosts: [app.local, api.local]
-      secretName: project-a1-tls
   rules:
     - host: app.local
       http:
