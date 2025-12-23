@@ -5,25 +5,25 @@ metadata:
   namespace: project-a1
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts: [app.local, api.local]
+      secretName: project-a1-tls
   rules:
-  - host: app.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: flutter-frontend
-            port:
-              number: 80
-
-  - host: api.local
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: fastapi-backend
-            port:
-              number: 8000
+    - host: app.local
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: flutter-frontend
+              port: { number: 80 }
+    - host: api.local
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: fastapi-backend
+              port: { number: 8000 }
