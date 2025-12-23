@@ -148,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                           ? null
                           : () => Api.oauthLogin(
                                 "google",
-                                redirect: "https://app.local/#/home",
+                                redirect: "http://app.local/#/home",
                               ),
                       child: const Text("Google로 계속"),
                     ),
@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                           ? null
                           : () => Api.oauthLogin(
                                 "line",
-                                redirect: "https://app.local/#/home",
+                                redirect: "http://app.local/#/home",
                               ),
                       child: const Text("LINE으로 계속"),
                     ),

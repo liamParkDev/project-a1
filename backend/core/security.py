@@ -124,17 +124,20 @@ def set_auth_cookies(
     refresh_token: str | None = None,
     access_expires_minutes: int = 60,
     refresh_expires_minutes: int = 60 * 24 * 7,
+    secure: bool | None = None,
 ):
     """
     JWT를 쿠키로 내려주는 헬퍼 (웹 클라이언트용)
     """
+    if secure is None:
+        secure = settings.APP_ENV != "local"
     access_expires = access_expires_minutes * 60
     refresh_expires = refresh_expires_minutes * 60
     response.set_cookie(
         "access_token",
         access_token,
         max_age=access_expires,
-        secure=True,
+        secure=secure,
         httponly=True,
         samesite="lax",
         path="/",
@@ -144,7 +147,7 @@ def set_auth_cookies(
             "refresh_token",
             refresh_token,
             max_age=refresh_expires,
-            secure=True,
+            secure=secure,
             httponly=True,
             samesite="lax",
             path="/",
