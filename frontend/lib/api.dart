@@ -19,6 +19,21 @@ class Api {
     return dio.post(path, data: data);
   }
 
+  static Future<bool> register(String email, String password, String nickname) async {
+    final res = await dio.post('/users/register', data: {
+      "email": email,
+      "password": password,
+      "nickname": nickname,
+    });
+
+    final access = res.data["access_token"];
+    final refresh = res.data["refresh_token"];
+    if (access != null && refresh != null) {
+      await TokenStorage.saveTokens(access, refresh);
+    }
+    return true;
+  }
+
   static Future<bool> login(String email, String password) async {
     final res = await dio.post('/users/login', data: {
       "email": email,
@@ -78,7 +93,8 @@ class _AuthInterceptor extends Interceptor {
       });
 
       final newAccess = res.data["access_token"];
-      final newRefresh = res.data["refresh_token"];
+      // refresh 응답이 access만 내려오므로 refresh 토큰은 기존 값 유지
+      final newRefresh = res.data["refresh_token"] ?? refresh;
 
       await TokenStorage.saveTokens(newAccess, newRefresh);
       print(" Token 재발급 성공");

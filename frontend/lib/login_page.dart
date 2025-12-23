@@ -12,31 +12,34 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final pwController = TextEditingController();
+  final nicknameController = TextEditingController();
 
   bool loading = false;
   String? errorMessage;
+  bool isLogin = true;
 
-  Future<void> login() async {
+  Future<void> _submit() async {
     setState(() {
       loading = true;
       errorMessage = null;
     });
 
     try {
-      final ok = await Api.login(
-        emailController.text.trim(),
-        pwController.text.trim(),
-      );
+      final email = emailController.text.trim();
+      final password = pwController.text.trim();
+      final nickname = nicknameController.text.trim();
 
-      if (ok) {
+      final ok = isLogin
+          ? await Api.login(email, password)
+          : await Api.register(email, password, nickname);
+
+      if (ok && mounted) {
         // 성공 → 홈으로 이동
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, '/home');
-        }
+        Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
       setState(() {
-        errorMessage = "로그인 실패: ${e.toString()}";
+        errorMessage = "실패: ${e.toString()}";
       });
     }
 
@@ -61,9 +64,9 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 30),
 
-              const Text(
-                "Project A1 Login",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Text(
+                isLogin ? "Project A1 Login" : "Project A1 회원가입",
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
 
               const SizedBox(height: 30),
@@ -89,6 +92,17 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
+              if (!isLogin) ...[
+                const SizedBox(height: 15),
+                TextField(
+                  controller: nicknameController,
+                  decoration: const InputDecoration(
+                    labelText: "Nickname",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
+
               const SizedBox(height: 20),
 
               // 오류 메시지
@@ -102,13 +116,23 @@ class _LoginPageState extends State<LoginPage> {
 
               // ---- Login Button ----
               ElevatedButton(
-                onPressed: loading ? null : login,
+                onPressed: loading ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 child: loading
                     ? const CircularProgressIndicator()
-                    : const Text("로그인"),
+                    : Text(isLogin ? "로그인" : "회원가입"),
+              ),
+
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    isLogin = !isLogin;
+                    errorMessage = null;
+                  });
+                },
+                child: Text(isLogin ? "회원가입으로 전환" : "로그인으로 전환"),
               ),
             ],
           ),
