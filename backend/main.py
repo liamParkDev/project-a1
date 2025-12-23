@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from db.session import get_db, engine
 from db.session import Base
-from routers import users, products, regions, community 
+from routers import users, products, regions, community, auth 
 
 
 app = FastAPI(title="Project A1 API")
@@ -26,6 +26,7 @@ app.include_router(users.router, prefix="/api")
 app.include_router(products.router, prefix="/api")
 app.include_router(regions.router, prefix="/api")
 app.include_router(community.router, prefix="/api")
+app.include_router(auth.router, prefix="/api")
 
 
 # ==============================

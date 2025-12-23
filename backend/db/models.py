@@ -3,7 +3,7 @@ import enum
 
 from sqlalchemy import (
     Column, BigInteger, Integer, String, Text, DateTime, ForeignKey, Float,
-    Enum as SAEnum
+    Enum as SAEnum, UniqueConstraint
 )
 from sqlalchemy.dialects.mysql import TINYINT
 from sqlalchemy.orm import relationship
@@ -71,7 +71,7 @@ class User(Base):
 
     id = Column(BigInteger, primary_key=True)
     email = Column(String(255), unique=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=True)
     nickname = Column(String(100), nullable=False)
     profile_image = Column(String(500))
 
@@ -79,6 +79,10 @@ class User(Base):
     is_active = Column(TINYINT(1), default=1)
 
     refresh_token = Column(Text, nullable=True)
+    profile_complete = Column(TINYINT(1), default=0)
+    suspended_until = Column(DateTime, nullable=True)
+    suspended_reason = Column(String(255), nullable=True)
+    deleted_at = Column(DateTime, nullable=True)
 
     home_region_id = Column(BigInteger, ForeignKey("regions.id"))
     home_lat = Column(Float)
@@ -91,12 +95,29 @@ class User(Base):
     home_region = relationship("Region", back_populates="users")
 
     # Relations
+    providers = relationship("UserProvider", back_populates="user", cascade="all,delete-orphan")
     products = relationship("Product", back_populates="seller")
     product_likes = relationship("ProductLike", back_populates="user")
     community_posts = relationship("CommunityPost", back_populates="user")
     community_comments = relationship("CommunityComment", back_populates="user")
     community_post_likes = relationship("CommunityPostLike", back_populates="user")
     chat_messages = relationship("ChatMessage", back_populates="sender")
+
+
+class UserProvider(Base):
+    __tablename__ = "user_providers"
+    __table_args__ = (
+        UniqueConstraint("provider", "provider_user_id", name="uq_provider_identity"),
+    )
+
+    id = Column(BigInteger, primary_key=True)
+    user_id = Column(BigInteger, ForeignKey("users.id"), nullable=False)
+    provider = Column(String(50), nullable=False)
+    provider_user_id = Column(String(255), nullable=False)
+    email = Column(String(255))
+    linked_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User", back_populates="providers")
 
 
 # =====================================
