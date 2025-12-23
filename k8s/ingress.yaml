@@ -17,6 +17,12 @@ spec:
             service:
               name: flutter-frontend
               port: { number: 80 }
+        - path: /api
+          pathType: Prefix
+          backend:
+            service:
+              name: fastapi-backend
+              port: { number: 8000 }
     - host: api.local
       http:
         paths:

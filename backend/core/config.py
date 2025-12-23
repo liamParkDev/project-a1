@@ -15,7 +15,7 @@ ENV_FILE_MAP = {
 class Settings(BaseSettings):
     APP_ENV: str = ENV
     JWT_ALGORITHM: str = "HS256"
-    OAUTH_REDIRECT_BASE: str = "https://app.local/api/auth"
+    OAUTH_REDIRECT_BASE: str = "https://api.local/api/auth"
 
     GOOGLE_CLIENT_ID: str | None = None
     GOOGLE_CLIENT_SECRET: str | None = None
